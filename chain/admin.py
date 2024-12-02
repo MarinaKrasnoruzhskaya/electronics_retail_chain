@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db import transaction
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
@@ -32,6 +33,9 @@ class ElementChainAdmin(admin.ModelAdmin):
 
     list_display = ('name', 'city', 'supplier_link', 'debt', 'created_at', 'name_element_chain', 'hierarchy_level', )
     readonly_fields = ('created_at', 'hierarchy_level')
+    inlines = [ContactInline, ]
+    actions = ("clear_debt",)
+    list_filter = ('contacts__city',)
 
     @admin.display(description="Supplier URL")
     def supplier_link(self, obj):
@@ -47,3 +51,18 @@ class ElementChainAdmin(admin.ModelAdmin):
 
         city = obj.contacts.first().city
         return city
+
+    @transaction.atomic
+    def save_model(self, request, obj, form, change):
+        """ Метод определяет уровень иерархии звена сети """
+
+        if obj.supplier:
+            obj.hierarchy_level = obj.supplier.hierarchy_level + 1
+            obj.save()
+        super().save_model(request, obj, form, change)
+
+    @admin.action(description="Очистить задолженность перед поставщиком")
+    def clear_debt(self, request, queryset):
+        """ Для выбранных объектов сети значение задолженность перед поставщиком сделать равной 0.00"""
+
+        queryset.update(debt=0.00)
