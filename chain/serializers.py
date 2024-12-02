@@ -159,4 +159,3 @@ class ElementChainProductsSerializer(WritableNestedModelSerializer):
     class Meta:
         model = ElementChain
         fields = ('pk', 'products')
-

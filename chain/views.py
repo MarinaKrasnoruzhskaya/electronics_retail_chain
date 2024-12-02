@@ -110,4 +110,3 @@ class ProductsDestroyAPIView(DestroyAPIView):
         """ Возвращает продукт звена сети по pk звена и id контакта """
 
         return Product.objects.get(pk=self.kwargs['pk'])
-
