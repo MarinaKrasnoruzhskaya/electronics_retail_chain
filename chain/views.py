@@ -1,8 +1,9 @@
-from django.shortcuts import render
 from rest_framework.generics import DestroyAPIView, CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from chain.models import ElementChain, Contacts, Product
+from chain.permissions import IsActiveUser
 from chain.serializers import ElementChainSerializer, ElementChainUpdateSerializer, ContactsSerializer, \
     ElementChainProductsSerializer, ProductSerializer
 
@@ -12,6 +13,7 @@ class ElementChainViewSet(ModelViewSet):
 
     queryset = ElementChain.objects.all()
     serializer_class = ElementChainSerializer
+    permission_classes = [IsAuthenticated, IsActiveUser, ]
 
     class Meta:
         model = ElementChain
@@ -31,6 +33,7 @@ class ContactsDestroyAPIView(DestroyAPIView):
     queryset = Contacts.objects.all()
     lookup_field = "element_chain_id"
     serializer_class = ContactsSerializer
+    permission_classes = [IsAuthenticated, IsActiveUser, ]
 
     def get_object(self):
         """ Возвращает контакт звена сети по id звена и id контакта """
@@ -43,6 +46,7 @@ class ElementChainProductsCreateAPIView(CreateAPIView):
 
     queryset = ElementChain.objects.all()
     serializer_class = ElementChainProductsSerializer
+    permission_classes = [IsAuthenticated, IsActiveUser, ]
 
     class Meta:
         model = ElementChain
@@ -54,6 +58,7 @@ class ElementChainProductsListAPIView(ListAPIView):
 
     queryset = ElementChain.objects.all()
     serializer_class = ElementChainProductsSerializer
+    permission_classes = [IsAuthenticated, IsActiveUser, ]
 
     class Meta:
         model = ElementChain
@@ -65,6 +70,7 @@ class ElementChainProductsRetrieveAPIView(RetrieveAPIView):
 
     queryset = ElementChain.objects.all()
     serializer_class = ElementChainProductsSerializer
+    permission_classes = [IsAuthenticated, IsActiveUser, ]
 
     class Meta:
         model = ElementChain
@@ -77,6 +83,7 @@ class ElementChainProductsUpdateAPIView(UpdateAPIView):
     queryset = ElementChain.objects.all()
     serializer_class = ElementChainProductsSerializer
     http_method_names = ['patch',]
+    permission_classes = [IsAuthenticated, IsActiveUser, ]
 
     class Meta:
         model = ElementChain
@@ -94,6 +101,7 @@ class ProductsDestroyAPIView(DestroyAPIView):
     queryset = Product.objects.all()
     lookup_field = "element_chain_id"
     serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated, IsActiveUser, ]
 
     def get_object(self):
         """ Возвращает продукт звена сети по pk звена и id контакта """
