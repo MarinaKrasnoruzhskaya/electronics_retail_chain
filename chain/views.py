@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from rest_framework.generics import DestroyAPIView
+from rest_framework.generics import DestroyAPIView, CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.viewsets import ModelViewSet
 
-from chain.models import ElementChain, Contacts
-from chain.serializers import ElementChainSerializer, ElementChainUpdateSerializer, ContactsSerializer
+from chain.models import ElementChain, Contacts, Product
+from chain.serializers import ElementChainSerializer, ElementChainUpdateSerializer, ContactsSerializer, \
+    ElementChainProductsSerializer, ProductSerializer
 
 
 class ElementChainViewSet(ModelViewSet):
@@ -35,3 +36,67 @@ class ContactsDestroyAPIView(DestroyAPIView):
         """ Возвращает контакт звена сети по id звена и id контакта """
 
         return Contacts.objects.get(pk=self.kwargs['pk'], element_chain=self.kwargs['element_chain_id'])
+
+
+class ElementChainProductsCreateAPIView(CreateAPIView):
+    """ Класс-представление для создания продукта заводом """
+
+    queryset = ElementChain.objects.all()
+    serializer_class = ElementChainProductsSerializer
+
+    class Meta:
+        model = ElementChain
+        fields = ('pk', 'products')
+
+
+class ElementChainProductsListAPIView(ListAPIView):
+    """ Класс-представление для списка звеньев цепи с их продуктами """
+
+    queryset = ElementChain.objects.all()
+    serializer_class = ElementChainProductsSerializer
+
+    class Meta:
+        model = ElementChain
+        fields = ('pk', 'products')
+
+
+class ElementChainProductsRetrieveAPIView(RetrieveAPIView):
+    """ Класс-представление для звена цепи с продуктами по заданному pk"""
+
+    queryset = ElementChain.objects.all()
+    serializer_class = ElementChainProductsSerializer
+
+    class Meta:
+        model = ElementChain
+        fields = ('pk', 'products')
+
+
+class ElementChainProductsUpdateAPIView(UpdateAPIView):
+    """ Класс-представление для изменения продукта заводом или добавления продукта другими звеньями цепи (не завод) """
+
+    queryset = ElementChain.objects.all()
+    serializer_class = ElementChainProductsSerializer
+    http_method_names = ['patch',]
+
+    class Meta:
+        model = ElementChain
+        fields = ('pk', 'products')
+
+    def get_object(self):
+        """ Возвращает звена сети по id звена """
+
+        return ElementChain.objects.get(pk=self.kwargs['pk'])
+
+
+class ProductsDestroyAPIView(DestroyAPIView):
+    """ Класс-представление для удаления продукта заводом"""
+
+    queryset = Product.objects.all()
+    lookup_field = "element_chain_id"
+    serializer_class = ProductSerializer
+
+    def get_object(self):
+        """ Возвращает продукт звена сети по pk звена и id контакта """
+
+        return Product.objects.get(pk=self.kwargs['pk'])
+
