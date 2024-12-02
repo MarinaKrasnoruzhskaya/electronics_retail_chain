@@ -10,7 +10,8 @@ class ContactsSerializer(CountryFieldMixin, serializers.ModelSerializer):
 
     class Meta:
         model = Contacts
-        exclude = ('id', 'element_chain')
+        fields = "__all__"
+        read_only_fields = ('id', 'element_chain', )
 
 
 class ContactsUpdateSerializer(CountryFieldMixin, serializers.ModelSerializer):
