@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import DestroyAPIView, CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
@@ -14,6 +15,8 @@ class ElementChainViewSet(ModelViewSet):
     queryset = ElementChain.objects.all()
     serializer_class = ElementChainSerializer
     permission_classes = [IsAuthenticated, IsActiveUser, ]
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ("contacts__country",)
 
     class Meta:
         model = ElementChain
