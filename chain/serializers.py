@@ -52,6 +52,16 @@ class ElementChainSerializer(serializers.ModelSerializer):
 
         return supplier
 
+    def validate(self, attrs):
+
+        if attrs.get('name_element_chain', None) == "завод" and attrs.get('supplier', False):
+            raise serializers.ValidationError('У звена сети "factory" не может быть поставщика')
+
+        if attrs.get('name_element_chain', None) == "завод" and attrs.get('debt', False):
+            raise serializers.ValidationError('У звена сети "factory" не может быть задолженность')
+
+        return attrs
+
 
 class ElementChainUpdateSerializer(serializers.ModelSerializer):
     """ Сериализатор для модели ElementChain для изменения """
