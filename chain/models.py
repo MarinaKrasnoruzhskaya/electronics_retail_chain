@@ -91,7 +91,9 @@ class Contacts(models.Model):
         ElementChain,
         on_delete=models.CASCADE,
         verbose_name="Звено сети",
-        related_name="contacts"
+        related_name="contacts",
+        blank=True,
+        null=True
     )
 
     email = models.EmailField(verbose_name="Email", help_text="Введите email")

@@ -14,7 +14,7 @@ class ElementChainViewSet(ModelViewSet):
 
     queryset = ElementChain.objects.all()
     serializer_class = ElementChainSerializer
-    permission_classes = [IsAuthenticated, IsActiveUser, ]
+    # permission_classes = [IsAuthenticated, IsActiveUser, ]
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("contacts__country",)
 
@@ -49,7 +49,7 @@ class ElementChainProductsCreateAPIView(CreateAPIView):
 
     queryset = ElementChain.objects.all()
     serializer_class = ElementChainProductsSerializer
-    permission_classes = [IsAuthenticated, IsActiveUser, ]
+    # permission_classes = [IsAuthenticated, IsActiveUser, ]
 
     class Meta:
         model = ElementChain

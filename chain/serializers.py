@@ -27,7 +27,7 @@ class ContactsUpdateSerializer(CountryFieldMixin, serializers.ModelSerializer):
 class ElementChainSerializer(serializers.ModelSerializer):
     """ Сериализатор для модели ElementChain """
 
-    contacts = ContactsSerializer(many=True)
+    contacts = ContactsSerializer(many=True, required=False)
     created_at = serializers.DateTimeField(read_only=True)
     hierarchy_level = serializers.IntegerField(read_only=True)
 
@@ -44,7 +44,7 @@ class ElementChainSerializer(serializers.ModelSerializer):
             validated_data['hierarchy_level'] = supplier_data.hierarchy_level + 1
 
         # Создаём объект модели Звено сети и объекты модели Контакты
-        contacts_data = validated_data.pop('contacts')
+        contacts_data = validated_data.pop('contacts', [])
         supplier = ElementChain.objects.create(**validated_data)
 
         for contact_data in contacts_data:
@@ -53,7 +53,7 @@ class ElementChainSerializer(serializers.ModelSerializer):
         return supplier
 
 
-class ElementChainUpdateSerializer(serializers.ModelSerializer):
+class ElementChainUpdateSerializer(WritableNestedModelSerializer):
     """ Сериализатор для модели ElementChain для изменения """
 
     contacts = ContactsUpdateSerializer(many=True)
@@ -95,7 +95,7 @@ class ElementChainUpdateSerializer(serializers.ModelSerializer):
         # Обновляем модель
         instance.name = validated_data.get('name', instance.name)
         instance.supplier = validated_data.get('supplier', instance.supplier)
-        instance.name_element_chain = validated_data.get('name_element_chain', instance.name_element_chain)
+        # instance.name_element_chain = validated_data.get('name_element_chain', instance.name_element_chain)
         instance.save()
 
         return instance
@@ -113,14 +113,14 @@ class ElementChainProductsSerializer(WritableNestedModelSerializer):
     """ Сериализатор для модели ElementChain с продуктами """
 
     pk = serializers.IntegerField()
-    products = ProductSerializer(many=True)
+    products = ProductSerializer(many=True, required=False)
 
     def create(self, validated_data):
         """ Создание продукта звеном цепи - завод """
 
         instance = ElementChain.objects.get(pk=validated_data.get('pk'))
         if instance.name_element_chain in ['завод', 'factory']:
-            products_data = validated_data.get('products')
+            products_data = validated_data.get('products', [])
             for product_data in products_data:
                 product_new = Product.objects.create(**product_data)
                 instance.products.add(product_new)
