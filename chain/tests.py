@@ -40,10 +40,7 @@ class ChainTestCase(APITestCase):
         url = reverse("chain:elementchain-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            ElementChain.objects.all().count(),
-            1
-        )
+        self.assertEqual(ElementChain.objects.all().count(), 1)
 
     def test_element_chain_create(self):
         url = reverse("chain:elementchain-list")
@@ -70,42 +67,20 @@ class ChainTestCase(APITestCase):
         url = reverse("chain:elementchain-detail", args=(self.element_chain.pk,))
         response = self.client.get(url)
         data = response.json()
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK
-        )
-        self.assertEqual(
-            data.get('name'),
-            self.element_chain.name
-        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data.get('name'), self.element_chain.name)
 
     def test_element_chain_update(self):
         url = reverse("chain:elementchain-detail", args=(self.element_chain.pk,))
-        data = {
-            'name': 'Тестовая компания 2',
-        }
+        data = {'name': 'Тестовая компания 2', }
         response = self.client.patch(url, data)
         data = response.json()
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK
-        )
-        self.assertEqual(
-            data.get('name'),
-            'Тестовая компания 2'
-        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data.get('name'), 'Тестовая компания 2')
 
     def test_element_chain_update_contacts(self):
         url = reverse("chain:elementchain-detail", args=(self.element_chain.pk,))
-        data = {
-            'contacts':
-                [
-                    {
-                        'id': self.contact.id,
-                        'city': 'Новый тестовый город'
-                    }
-                ]
-        }
+        data = {'contacts': [{'id': self.contact.id, 'city': 'Новый тестовый город'}]}
         response = self.client.patch(url, data)
         data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -114,23 +89,14 @@ class ChainTestCase(APITestCase):
     def test_element_chain_delete(self):
         url = reverse("chain:elementchain-detail", args=(self.element_chain.pk,))
         response = self.client.delete(url)
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_204_NO_CONTENT
-        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(ElementChain.objects.all().count(), 0)
 
     def test_contact_delete(self):
         url = reverse("chain:contact-delete", args=(self.element_chain.pk, self.contact.pk))
         response = self.client.delete(url)
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_204_NO_CONTENT
-        )
-        self.assertEqual(
-            Contacts.objects.all().count(),
-            0
-        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Contacts.objects.all().count(), 0)
 
     def test_element_chain_product_list(self):
         url = reverse('chain:products-list')
@@ -149,14 +115,8 @@ class ChainTestCase(APITestCase):
                 ]
             }
         ]
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK
-        )
-        self.assertEqual(
-            data,
-            result
-        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data, result)
 
     def test_element_chain_product_create(self):
         url = reverse("chain:products-create")
@@ -173,3 +133,26 @@ class ChainTestCase(APITestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Product.objects.all().count(), 2)
+
+    def test_element_chain_product_update(self):
+        url = reverse("chain:products-update", args=(self.element_chain.pk,))
+        data = {
+            "pk": self.element_chain.pk,
+            "products": [
+                {
+                    "name": "Новый тестовый продукт",
+                    "model": self.product.model
+                }
+            ]
+        }
+        response = self.client.patch(url, data)
+        data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data.get('products')[0].get('name'), 'Новый тестовый продукт')
+
+    def test_element_chain_product_retrieve(self):
+        url = reverse("chain:products-detail", args=(self.element_chain.pk,))
+        response = self.client.get(url)
+        data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data.get('products')[0].get('name'), self.product.name)
