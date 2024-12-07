@@ -1,12 +1,25 @@
 version: "3"
 
 services:
-
+  web:
+    # Берем Dockerfile из каталога app
+    build: .
+    # Запускаем тестовый сервер
+    command: python manage.py runserver 0.0.0.0:8000
+    # куда будут помещены данные из каталога app
+    volumes:
+      - .:/app
+    # Открываем порт 8000 внутри и снаружи
+    ports:
+      - 8000:8000
+    # Файл содержащий переменные для контейнера
+    env_file:
+      - .env.dev
   db:
-    image: postgres
+    image: postgres:16-alpine
     restart: on-failure
     env_file:
-      - .env
+      - .env.dev
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
@@ -15,19 +28,19 @@ services:
       timeout: 5s
       retries: 5
 
-  app:
-    build: .
-    tty: true
-    ports:
-      - "8000:8000"
-    command: sh -c "python manage.py migrate && python manage.py csu && python manage.py runserver 0.0.0.0:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - .:/app
-    env_file:
-      - .env
-
+#  app:
+#    build: .
+#    tty: true
+#    ports:
+#      - "8000:8000"
+#    command: sh -c "python manage.py migrate && python manage.py csu && python manage.py runserver 0.0.0.0:8000"
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#    volumes:
+#      - .:/app
+#    env_file:
+#      - .env
+#
 volumes:
   pg_data:
